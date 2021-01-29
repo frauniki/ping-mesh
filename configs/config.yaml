@@ -1,0 +1,11 @@
+#server_url: http://127.0.0.1:8000/ping-mesh # Server URL
+#interval: 5s # Ticker interval time
+#log_level: info #Log level
+#ping:
+  #count: 1 # Ping count
+  #interval: 1s # Ping interval time
+  #timeout: 2s # Ping timeout time
+
+hosts:
+  - name: router01 # Ping target hostname
+    host: 10.0.0.1 # Ping target host (FQDN or IP Addres)
