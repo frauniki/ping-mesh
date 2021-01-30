@@ -4,8 +4,8 @@ server_url: http://server:8000/ping-mesh # Server URL
 #ping:
   #count: 1 # Ping count
   #interval: 1s # Ping interval time
-  #timeout: 2s # Ping timeout time
+  #timeout: 5s # Ping timeout time
 
 hosts:
-  - name: localhost # Ping target hostname
-    host: 127.0.0.1 # Ping target host (FQDN or IP Addres)
+  - name: router # Ping target hostname
+    host: 10.0.0.1 # Ping target host (FQDN or IP Addres)
