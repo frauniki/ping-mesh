@@ -11,9 +11,7 @@ services:
       dockerfile: ./cmd/server/Dockerfile
     ports: 
       - 8000:8000
-    environment: 
-      - REDIS_URL=redis://redis:6379/0
-      - REDIS_EXPIRE_TIME=120
+    env_file: .env
     depends_on:
       - redis
     restart: always

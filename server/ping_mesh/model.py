@@ -32,5 +32,6 @@ class Host(BaseModel):
 
 
 class PingMeshResult(BaseModel):
+    agent_hostname: str
     timestamp: datetime
     hosts: List[Host]

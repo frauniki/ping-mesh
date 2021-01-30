@@ -8,6 +8,7 @@ import (
 	"github.com/frauniki/ping-mesh/internal/agent/client"
 	"github.com/frauniki/ping-mesh/internal/agent/ping"
 	"github.com/frauniki/ping-mesh/internal/agent/ticker"
+	"github.com/frauniki/ping-mesh/pkg/common"
 	"github.com/frauniki/ping-mesh/pkg/config"
 	"github.com/frauniki/ping-mesh/pkg/domain"
 	"github.com/frauniki/ping-mesh/pkg/logger"
@@ -26,6 +27,12 @@ var (
 var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info("Start ping-mesh agent")
+
+		hostname, err := common.GetHostname()
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
 
 		var hosts []*domain.Host
 		for _, host := range config.Config.Hosts {
@@ -46,8 +53,9 @@ var rootCmd = &cobra.Command{
 				continue
 			}
 			if err := client.Post(&domain.PushData{
-				Timestamp: time.Now(),
-				Hosts:     hosts,
+				AgentHostname: hostname,
+				Timestamp:     time.Now(),
+				Hosts:         hosts,
 			}); err != nil {
 				log.Error(err)
 			}
