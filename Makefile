@@ -1,8 +1,8 @@
 build-linux:
-	GOOS=linux GOARCH=amd64 go build -o ./bin/agent cmd/agent/main.go
+	GOOS=linux GOARCH=amd64 go build -o ./bin/agent_linux cmd/agent/main.go
 
 build-windows:
-	GOOS=windows GOARCH=amd64 go build -o ./bin/agent.exe cmd/agent/main.go
+	GOOS=windows GOARCH=amd64 go build -o ./bin/agent_windows.exe cmd/agent/main.go
 
 docker-build-agent:
 	docker build . -f cmd/agent/Dockerfile
