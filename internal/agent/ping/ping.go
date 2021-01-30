@@ -1,7 +1,6 @@
 package ping
 
 import (
-	"sync"
 	"time"
 
 	"github.com/frauniki/ping-mesh/pkg/common"
@@ -16,24 +15,21 @@ const (
 )
 
 func RunPings(hosts []*domain.Host) error {
-	wg := sync.WaitGroup{}
+	//wg := sync.WaitGroup{}
 
 	for _, host := range hosts {
-		wg.Add(1)
-
-		go func(host *domain.Host) error {
-			defer wg.Done()
-
+		{
 			pinger, err := ping.NewPinger(host.Host)
 			if err != nil {
-				return err
+				log.Error(err)
 			}
+			pinger.SetPrivileged(true)
 			pinger.Count = config.Config.Ping.Count
 			if pinger.Interval, err = time.ParseDuration(config.Config.Ping.Interval); err != nil {
-				return err
+				log.Error(err)
 			}
 			if pinger.Timeout, err = time.ParseDuration(config.Config.Ping.Timeout); err != nil {
-				return err
+				log.Error(err)
 			}
 
 			log.WithFields(log.Fields{
@@ -41,17 +37,52 @@ func RunPings(hosts []*domain.Host) error {
 				"host": host.Host,
 			}).Debugf("Ping to %s", host.Name)
 			if err := pinger.Run(); err != nil {
-				return err
+				log.Error(err)
 			}
 
 			var result domain.Statistics
 			common.CopyStatistics(pinger.Statistics(), &result)
 			host.Result = &result
+		}
 
-			return nil
-		}(host)
+		// Does not work
+		// https://github.com/go-ping/ping/issues/54
+		// https://github.com/go-ping/ping/pull/84
+		/*
+			wg.Add(1)
+
+				go func(host *domain.Host) error {
+					defer wg.Done()
+
+					pinger, err := ping.NewPinger(host.Host)
+					if err != nil {
+						return err
+					}
+					pinger.SetPrivileged(true)
+					pinger.Count = config.Config.Ping.Count
+					if pinger.Interval, err = time.ParseDuration(config.Config.Ping.Interval); err != nil {
+						return err
+					}
+					if pinger.Timeout, err = time.ParseDuration(config.Config.Ping.Timeout); err != nil {
+						return err
+					}
+
+					log.WithFields(log.Fields{
+						"name": host.Name,
+						"host": host.Host,
+					}).Debugf("Ping to %s", host.Name)
+					if err := pinger.Run(); err != nil {
+						return err
+					}
+
+					var result domain.Statistics
+					common.CopyStatistics(pinger.Statistics(), &result)
+					host.Result = &result
+
+					return nil
+				}(host)
+		*/
 	}
-
-	wg.Wait()
+	//wg.Wait()
 	return nil
 }

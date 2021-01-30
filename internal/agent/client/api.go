@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/frauniki/ping-mesh/pkg/config"
@@ -26,7 +27,11 @@ func Post(req *domain.PushData) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to POST %s (%d)", config.Config.ServerURL, resp.StatusCode)
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("Failed to POST %s (%d): %s", config.Config.ServerURL, resp.StatusCode, string(bodyBytes))
 	}
 
 	return nil

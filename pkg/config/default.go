@@ -10,5 +10,5 @@ func setDefaultValues() {
 	// Global.Ping
 	viper.SetDefault("ping.count", 1)
 	viper.SetDefault("ping.interval", "1s")
-	viper.SetDefault("ping.timeout", "2s")
+	viper.SetDefault("ping.timeout", "5s")
 }

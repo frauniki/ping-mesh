@@ -18,7 +18,7 @@ class Statistics(BaseModel):
     packet_loss: float
     ip_address: IPAddress
     address: str
-    rtts: List[str]
+    rtts: Optional[List[str]] = None
     min_rtt: str
     max_rtt: str
     avg_rtt: str
