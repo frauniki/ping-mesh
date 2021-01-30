@@ -1,4 +1,4 @@
-#server_url: http://127.0.0.1:8000/ping-mesh # Server URL
+server_url: http://server:8000/ping-mesh # Server URL
 #interval: 60s # Ticker interval time
 #log_level: info #Log level
 #ping:

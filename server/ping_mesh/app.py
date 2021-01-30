@@ -1,55 +1,50 @@
 import json
-from datetime import datetime
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from typing import List
+
+from .model import PingMeshResult
+from .redis import (
+    client as redis_client,
+    get_all_values,
+)
+from .config import get_config
 
 
-LOCAL_SAVE_FILE_PATH = './output.json'
+LATEST_TAG = 'latest'
+DEFAUT_RESPONSE_COUNT = 100
 
 
 app = FastAPI()
 
 
-class IPAddress(BaseModel):
-    ip: str
-    zone: str
-
-
-class Statistics(BaseModel):
-    packet_receive: int
-    packet_sent: int
-    packet_loss: float
-    ip_address: IPAddress
-    address: str
-    rtts: List[str]
-    min_rtt: str
-    max_rtt: str
-    avg_rtt: str
-    standard_deviation_rtt: str
-
-
-class Host(BaseModel):
-    name: str
-    host: str
-    result: Statistics
-
-
-class PingMeshResult(BaseModel):
-    timestamp: datetime
-    hosts: List[Host]
-
-
-def json_local_save(payload: dict):
-    with open(LOCAL_SAVE_FILE_PATH, 'w') as f:
-        json.dump(payload, f, indent=4)
-
-
 @app.post('/ping-mesh')
-async def ping_mesh(req: PingMeshResult):
+async def post_ping_mesh(req: PingMeshResult):
     req_dict = jsonable_encoder(req)
-    json_local_save(req_dict)
+
+    key = req.timestamp.isoformat()
+    redis_client.set(key, json.dumps(req_dict))
+    redis_client.set(LATEST_TAG, json.dumps(req_dict))
+    redis_client.expire(key, get_config().redis_expire_time)
 
     return "success"
+
+
+@app.get('/ping-mesh')
+async def get_ping_mesh():
+    # Returns latest 100 results
+    return get_all_values()[0:DEFAUT_RESPONSE_COUNT]
+
+
+@app.get('/ping-mesh/all')
+async def get_ping_mesh_all():
+    return get_all_values()
+
+
+@app.get('/ping-mesh/latest')
+async def get_ping_mesh_latest():
+    value = redis_client.get(LATEST_TAG)
+    if not value:
+        return None
+
+    return json.loads(redis_client.get(LATEST_TAG))

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    restart: always
+
+  server:
+    build:
+      context: .
+      dockerfile: ./cmd/server/Dockerfile
+    ports: 
+      - 8000:8000
+    environment: 
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_EXPIRE_TIME=120
+    depends_on:
+      - redis
+    restart: always
+
+  agent:
+    build:
+      context: .
+      dockerfile: ./cmd/agent/Dockerfile
+    command: "--config /etc/config.yaml"
+    volumes: 
+      - ./configs/docker.yaml:/etc/config.yaml
+    depends_on:
+      - server
+    sysctls:
+      net.ipv4.ping_group_range: 0 2147483647
+    restart: always

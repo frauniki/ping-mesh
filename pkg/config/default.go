@@ -4,7 +4,7 @@ import "github.com/spf13/viper"
 
 func setDefaultValues() {
 	// Global
-	viper.SetDefault("interval", "5s")
+	viper.SetDefault("interval", "60s")
 	viper.SetDefault("log_level", "info")
 
 	// Global.Ping

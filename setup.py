@@ -10,6 +10,7 @@ setup(
     package_dir={'': 'server'},
     install_requires=(
         'fastapi',
+        'redis',
         'uvicorn[standard]',
     ),
 )
