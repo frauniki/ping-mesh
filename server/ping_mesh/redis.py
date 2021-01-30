@@ -2,7 +2,10 @@ import json
 
 import redis
 
-from .config import get_config
+from .config import (
+    get_config,
+    LATEST_TAG,
+)
 
 
 client = redis.from_url(get_config().redis_url)
@@ -13,6 +16,9 @@ def get_all_values() -> [dict]:
     res = []
 
     for key in keys:
+        key = key.decode()
+        if key == LATEST_TAG:
+            continue
         res.append(json.loads(client.get(key)))
 
     return sorted(res, key=lambda x: x['timestamp'], reverse=True)

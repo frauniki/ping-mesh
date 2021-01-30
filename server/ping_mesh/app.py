@@ -8,11 +8,11 @@ from .redis import (
     client as redis_client,
     get_all_values,
     search_by_hostname,
+    LATEST_TAG,
 )
 from .config import get_config
 
 
-LATEST_TAG = 'latest'
 DEFAUT_RESPONSE_COUNT = 100
 
 
